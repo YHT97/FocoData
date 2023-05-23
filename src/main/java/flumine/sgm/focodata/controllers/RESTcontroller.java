@@ -29,7 +29,7 @@ public class RESTcontroller {
         return new ResponseEntity<>(200, HttpStatus.OK);
     }
     @CrossOrigin
-    @PostMapping("/{id}/upload")
+    @PostMapping("/{device_id}/upload")
     ResponseEntity<?> upload(@RequestBody HashMap<String,Double> body, @PathVariable Long device_id){
         var key = body.keySet();
         if(!key.isEmpty()){
@@ -40,8 +40,8 @@ public class RESTcontroller {
         }
         return new ResponseEntity<>("ok",HttpStatus.BAD_REQUEST);
     }
-    @GetMapping("/{id}/get")
-    ResponseEntity<?> get_page(@PathVariable Long device_id, @Param("fi") int first,@Param("li") int last,@Param("sort") String sort){
+    @GetMapping("/{device_id}/get")
+    ResponseEntity<?> get_page(@PathVariable Long device_id, @RequestParam("fi") int first,@RequestParam("li") int last,@RequestParam("sort") String sort){
         Pageable pageable = PageRequest.of(first,last, Sort.by(sort));
         var response = db.findAllByDevice(device_id, pageable);
         if (!response.isEmpty()){
