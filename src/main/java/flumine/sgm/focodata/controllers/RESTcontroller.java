@@ -2,7 +2,6 @@ package flumine.sgm.focodata.controllers;
 
 import flumine.sgm.focodata.models.RequestModel;
 import flumine.sgm.focodata.repository.DataRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -29,24 +28,24 @@ public class RESTcontroller {
         return new ResponseEntity<>(200, HttpStatus.OK);
     }
     @CrossOrigin
-    @PostMapping("/{device_id}/upload")
-    ResponseEntity<?> upload(@RequestBody HashMap<String,Double> body, @PathVariable Long device_id){
+    @PostMapping("/{id}/upload")
+    ResponseEntity<?> upload(@RequestBody HashMap<String,Double> body, @PathVariable Long id){
         var key = body.keySet();
         if(!key.isEmpty()){
             for(var i:key) {
-                db.save(new RequestModel(device_id,body.get(i),i));
+                db.save(new RequestModel(id,body.get(i),i));
             }
-            return new ResponseEntity<>("ok",HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(body, HttpStatus.CREATED);
         }
-        return new ResponseEntity<>("ok",HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("400",HttpStatus.BAD_REQUEST);
     }
-    @GetMapping("/{device_id}/get")
-    ResponseEntity<?> get_page(@PathVariable Long device_id, @RequestParam("fi") int first,@RequestParam("li") int last,@RequestParam("sort") String sort){
-        Pageable pageable = PageRequest.of(first,last, Sort.by(sort));
-        var response = db.findAllByDevice(device_id, pageable);
+    @GetMapping("/{id}/get")
+    ResponseEntity<?> get_page(@PathVariable Long id, @Param("PageNumber") int PageNumber,@Param("PageSize") int PageSize,@Param("sort") String sort){
+        Pageable pageable = PageRequest.of(PageNumber,PageSize, Sort.by(sort));
+        var response = db.findAllByDevice(id, pageable);
         if (!response.isEmpty()){
             return new ResponseEntity<>(response,HttpStatus.OK);
         }
-        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("400", HttpStatus.BAD_REQUEST);
     }
 }
